@@ -1,0 +1,11 @@
+{
+  "name": "instafan-api",
+  "version": "1.0.0",
+  "description": "API for instafan-app",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Antonio Hernández Campos",
+  "license": "MIT"
+}
