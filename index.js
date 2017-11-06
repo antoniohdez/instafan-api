@@ -42,3 +42,8 @@ const PORT = process.env.PORT || 8000;
 
 app.listen(PORT);
 console.log(`Listening on port ${PORT}`);
+
+process.on('unhandledRejection', (reason, p) => {
+  console.log('Unhandled Rejection at: Promise', p, 'reason:', reason);
+  // application specific logging, throwing an error, or other logic here
+});
