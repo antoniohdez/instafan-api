@@ -35,6 +35,7 @@ router.get('/', function(req, res) {
 });
 
 app.use('/users', require('./app/routes/users'));
+app.use('/auth', require('./app/routes/auth'));
 
 // Config
 
