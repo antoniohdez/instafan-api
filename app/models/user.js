@@ -2,16 +2,46 @@ var mongoose = require('mongoose');
 var Schema   = mongoose.Schema;
 
 var UserSchema = new Schema({
-    name:           String, // Takes a value only when 'type' is personal
-    lastname:       String, // Takes a value only when 'type' is personal
-    businessName:   String, // Takes a value only when 'type' is other than personal
-    email:          String,
-    type:           String, // [business|marketing|PYME|personal]
-    status:         String, // [active|inactive|suspended]
-    website:        String,
-    password:       String,
-    createdOn:      Date,
-    updatedOn:      Date
+    name:         String,
+    lastname:     String,
+    businessName: String,
+    email:        { type: String, validate: { validator: validateEmail, message: "{VALUE} is an invalid email address." } },
+    type:         { type: String, enum: ["business", "marketing", "PYME", "personal"] },
+    status:       { type: String, enum: ["active", "inactive", "suspended"] },
+    website:      String,
+    password:     String,
+    createdOn:    Date,
+    updatedOn:    Date
 });
+
+// All except password hash
+UserSchema.methods.getPublicUser = function() {
+    return {
+        name:         this.name,
+        lastname:     this.lastname,
+        businessName: this.businessName,
+        email:        this.email,
+        type:         this.type,
+        status:       this.status,
+        website:      this.website,
+        createdOn:    this.createdOn,
+        updatedOn:    this.updatedOn
+    }
+}
+
+UserSchema.methods.setPublicUser = function(user) {
+    this.name         = user.name || this.name;
+    this.lastname     = user.lastname || this.lastname;
+    this.businessName = user.businessName || this.businessName;
+    this.type         = user.type || this.type;
+    this.status       = user.status || this.status;
+    this.website      = user.website || this.website;
+    return this; // Unnecessary
+}
+
+function validateEmail(email) {
+    const regex = /^[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?$/;
+    return regex.test(email);
+}
 
 module.exports = mongoose.model('User', UserSchema);
