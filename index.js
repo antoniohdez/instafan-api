@@ -1,43 +1,40 @@
 var express    = require('express');
-var app        = express();
+var app        = module.exports = express();
 var bodyParser = require('body-parser');
 var mongoose   = require('mongoose');
+var morgan 	   = require('morgan');
+var config 	   = require('./config');
 
 // Mongoose
 
 mongoose.Promise = global.Promise;
-
-var mongoDB = 'mongodb://127.0.0.1/instafan';
-mongoose.connect(mongoDB, {
+mongoose.connect(config.database, {
     useMongoClient: true
 });
-
 var db = mongoose.connection;
-
 db.on('error', console.error.bind(console, 'MongoDB connection error:'));
 
-//Body Parser
+// App Config
 
-app.use(bodyParser.urlencoded({ extended: true }));
+app.set('superSecret', config.secret); // secret variable
+app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
+
+// Log requests to the console
+app.use(morgan('dev'));
 
 // Router
 
 var router = express.Router();
 
-router.use(function(req, res, next) {
-    console.log('Server got a request.');
-    next();
-});
-
-router.get('/', function(req, res) {
-    res.json({ message: 'The API is working!' });   
+app.get('/', function(req, res) {
+    res.json({ status: 'OK', message: 'API running!' });
 });
 
 app.use('/users', require('./app/routes/users'));
 app.use('/auth', require('./app/routes/auth'));
 
-// Config
+// Server Config
 
 const PORT = process.env.PORT || 8000;
 

@@ -5,9 +5,9 @@ var UserSchema = new Schema({
     name:         String,
     lastname:     String,
     businessName: String,
-    email:        { type: String, validate: { validator: validateEmail, message: "Invalid email address." } },
-    type:         { type: String, required: true, enum: ["business", "marketing", "PYME", "personal"] },
-    status:       { type: String, required: true, enum: ["active", "inactive", "suspended"] },
+    email:        { type: String, validate: { validator: validateEmail, message: 'Invalid email address.' } },
+    type:         { type: String, required: true, enum: ['business', 'marketing', 'PYME', 'personal'] },
+    status:       { type: String, required: true, enum: ['active', 'inactive', 'suspended', 'blocked'] },
     website:      String,
     password:     String,
     createdOn:    Date,
@@ -44,4 +44,4 @@ function validateEmail(email) {
     return regex.test(email);
 }
 
-module.exports = mongoose.model('User', UserSchema);
+module.exports = mongoose.model('Users', UserSchema, 'Users');
