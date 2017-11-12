@@ -3,7 +3,7 @@ const util = require('../../util');
 
 exports.list = function(req, res) {
     User.find()
-        .then(util.returnFullObject(res))
+        .then(util.returnFullSchema(res))
         .catch(util.returnError(res));
 }
 
@@ -11,24 +11,24 @@ exports.create = function(req, res) {
     const user = createUser(req, res);
 
     user.save()
-        .then(util.returnPublicUser(res))
+        .then(util.returnPublicSchema(res))
         .catch(util.returnError(res));
 }
 
 exports.show = function(req, res) {
     User.findById(req.params.user_id)
-        .then(util.returnPublicUser(res))
+        .then(util.returnPublicSchema(res))
         .catch(util.returnError(res));
 }
 
 exports.update = function(req, res) {
     User.findById(req.params.user_id)
         .then((user) => {
-            updatedUser = user.setPublicUser(req.body);
+            updatedUser = user.setPublicSchema(req.body);
             updatedUser.updatedOn = Date.now();
 
             updatedUser.save()
-                .then(util.returnPublicUser(res))
+                .then(util.returnPublicSchema(res))
                 .catch(util.returnError(res));
 
         })
@@ -40,12 +40,12 @@ exports.delete = function(req, res) {
         .then((user) => {
             user.status = 'inactive';
             user.save()
-                .then(util.returnPublicUser(res))
+                .then(util.returnPublicSchema(res))
                 .catch(util.returnError(res));
         })
         .catch(util.returnError(res));
     /*User.remove({ _id: req.params.user_id })
-        .then(util.returnPublicUser(res))
+        .then(util.returnPublicSchema(res))
         .catch(util.returnError(res));*/
 };
 

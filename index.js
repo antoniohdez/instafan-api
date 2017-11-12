@@ -31,8 +31,9 @@ app.get('/', function(req, res) {
     res.json({ status: 'OK', message: 'API running!' });
 });
 
-app.use('/users', require('./app/routes/users'));
 app.use('/auth', require('./app/routes/auth'));
+app.use('/users', require('./app/routes/users'));
+app.use('/campaigns', require('./app/routes/campaigns'));
 
 // Server Config
 

@@ -6,16 +6,17 @@ var UserSchema = new Schema({
     lastname:     String,
     businessName: String,
     email:        { type: String, validate: { validator: validateEmail, message: 'Invalid email address.' } },
-    type:         { type: String, required: true, enum: ['business', 'marketing', 'PYME', 'personal'] },
-    status:       { type: String, required: true, enum: ['active', 'inactive', 'suspended', 'blocked'] },
+    type:         { type: String, enum: ['business', 'marketing', 'PYME', 'personal'] },
+    status:       { type: String, enum: ['active', 'inactive', 'suspended', 'blocked'] },
     website:      String,
     password:     String,
+    
     createdOn:    Date,
     updatedOn:    Date
 });
 
 // All except password hash
-UserSchema.methods.getPublicUser = function() {
+UserSchema.methods.getPublicSchema = function() {
     return {
         name:         this.name,
         lastname:     this.lastname,
@@ -36,7 +37,8 @@ UserSchema.methods.setPublicUser = function(user) {
     this.type         = user.type || this.type;
     this.status       = user.status || this.status;
     this.website      = user.website || this.website;
-    return this; // Unnecessary
+
+    return this;
 }
 
 function validateEmail(email) {

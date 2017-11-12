@@ -1,15 +1,15 @@
 const bcrypt = require('bcrypt');
 
-exports.returnPublicUser = function(res) {
-    return (user) => {
-        var publicUser = user.getPublicUser();
-        res.json(publicUser);
+exports.returnPublicSchema = function(res) {
+    return (schema) => {
+        var publicSchema = schema.getPublicSchema();
+        res.json(publicSchema);
     }
 }
 
-exports.returnFullObject = function(res) {
-    return (user) => {
-        res.json(user);
+exports.returnFullSchema = function(res) {
+    return (schema) => {
+        res.json(schema);
     }
 }
 
