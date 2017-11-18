@@ -3,7 +3,7 @@ var bcrypt = require('bcrypt');
 var jwt = require('jsonwebtoken');
 var Auth = require('../../models/auth');
 var User = require('../users/controller');
-const util = require('../../util');
+const password = require('../../util/password');
 
 exports.login = function(req, res) {
     Auth.findOne({ email: req.body.email })
@@ -50,7 +50,7 @@ exports.changePassword = function(req, res) {
                 // Validate Password
                 if (bcrypt.compareSync(req.body.currentpassword, user.password)) {
 
-                    user.password = util.hashPassword(req.body.newPassword);
+                    user.password = password.hashPassword(req.body.newPassword);
                     user.save()
                         .then((user) => {
                             res.json({

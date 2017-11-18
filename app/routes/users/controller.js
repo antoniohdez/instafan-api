@@ -1,24 +1,25 @@
 const User = require('../../models/user');
-const util = require('../../util');
+const response = require('../../util/response');
+const password = require('../../util/password');
 
 exports.list = function(req, res) {
     User.find()
-        .then(util.returnFullSchema(res))
-        .catch(util.returnError(res));
+        .then(response.returnFullSchema(res))
+        .catch(response.returnError(res));
 }
 
 exports.create = function(req, res) {
     const user = createUser(req, res);
 
     user.save()
-        .then(util.returnPublicSchema(res))
-        .catch(util.returnError(res));
+        .then(response.returnPublicSchema(res))
+        .catch(response.returnError(res));
 }
 
 exports.show = function(req, res) {
     User.findById(req.params.user_id)
-        .then(util.returnPublicSchema(res))
-        .catch(util.returnError(res));
+        .then(response.returnPublicSchema(res))
+        .catch(response.returnError(res));
 }
 
 exports.update = function(req, res) {
@@ -28,11 +29,11 @@ exports.update = function(req, res) {
             updatedUser.updatedOn = Date.now();
 
             updatedUser.save()
-                .then(util.returnPublicSchema(res))
-                .catch(util.returnError(res));
+                .then(response.returnPublicSchema(res))
+                .catch(response.returnError(res));
 
         })
-        .catch(util.returnError(res));
+        .catch(response.returnError(res));
 }
 
 exports.delete = function(req, res) {
@@ -40,13 +41,13 @@ exports.delete = function(req, res) {
         .then((user) => {
             user.status = 'inactive';
             user.save()
-                .then(util.returnPublicSchema(res))
-                .catch(util.returnError(res));
+                .then(response.returnPublicSchema(res))
+                .catch(response.returnError(res));
         })
-        .catch(util.returnError(res));
+        .catch(response.returnError(res));
     /*User.remove({ _id: req.params.user_id })
-        .then(util.returnPublicSchema(res))
-        .catch(util.returnError(res));*/
+        .then(response.returnPublicSchema(res))
+        .catch(response.returnError(res));*/
 };
 
 function createUser(req, res) {
@@ -57,8 +58,8 @@ function createUser(req, res) {
     user.createdOn = Date.now();
     user.updatedOn = Date.now();
     
-    util.validatePassword(req.body.password, req, res);
-    user.password = util.hashPassword(req.body.password);
+    password.validatePassword(req.body.password, req, res);
+    user.password = password.hashPassword(req.body.password);
     
     return user;
 }
