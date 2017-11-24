@@ -9,7 +9,7 @@ exports.login = function(req, res) {
     Auth.findOne({ email: req.body.email })
         .then((user) => {
             if (!user) {
-                res.json({ success: false, message: 'Authentication failed.' });
+                res.status(401).json({ success: false, message: 'Authentication failed.' });
             } else {
                 // Validate Password
                 if (bcrypt.compareSync(req.body.password, user.password)) {
@@ -24,12 +24,12 @@ exports.login = function(req, res) {
                         token: token
                     });
                 } else {
-                    res.json({ success: false, message: 'Authentication failed.' });
+                    res.status(401).json({ success: false, message: 'Authentication failed.' });
                 }
             }
         })
-        .catch(() => {
-
+        .catch((error) => {
+            res.status(401).json({ success: false, message: 'Authentication failed.' });
         });
 };
 
