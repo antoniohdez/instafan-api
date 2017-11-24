@@ -16,12 +16,12 @@ exports.login = function(req, res) {
                     
                     const payload = { email: user.email };
                     const expirationTime = 60 * 60; // 1 hours
-                    const token = generateWebToken(payload, expirationTime);
+                    const accessToken = generateWebToken(payload, expirationTime);
 
                     res.json({
                         success: true,
                         message: 'Authentication successful.',
-                        token: token
+                        accessToken: accessToken
                     });
                 } else {
                     res.status(401).json({ success: false, message: 'Authentication failed.' });
@@ -73,10 +73,30 @@ exports.resetPassword = function(req, res) {
     // Pending: Check how email will work.
 }
 
+exports.verifyToken = function(req, res) {
+    const accessToken = req.headers['x-access-token'];
+
+    if (accessToken) {
+        jwt.verify(accessToken, app.get('superSecret'), (err, decoded) => {
+            if (err) {
+                res.status(401).json({ success: false, message: 'Failed to authenticate token.' });
+            } else {
+                res.json({
+                    success: true,
+                    message: 'Authenticated.'
+                });
+            }
+        });    
+    } else {
+        res.status(401).json({ success: false, message: 'No token provided.' });
+    }
+    
+}
+
 function generateWebToken(payload, expirationTime) {
-    const token = jwt.sign(payload, app.get('superSecret'), {
+    const accessToken = jwt.sign(payload, app.get('superSecret'), {
         expiresIn: expirationTime
     });
 
-    return token;
+    return accessToken;
 }

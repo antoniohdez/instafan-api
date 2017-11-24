@@ -7,7 +7,9 @@ router.post('/login', controller.login);
 router.delete('/logout', controller.logout);
 
 router.post('/register', controller.register);
-router.put('/changePassword', controller.changePassword);
-router.put('/resetPassword', controller.resetPassword);
+router.put('/change-password', controller.changePassword);
+router.put('/reset-password', controller.resetPassword);
+
+router.get('/verify-token', controller.verifyToken);
 
 module.exports = router;
