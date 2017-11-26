@@ -2,7 +2,7 @@ var mongoose = require('mongoose');
 var Schema   = mongoose.Schema;
 
 var UserSchema = new Schema({
-    name:         String,
+    firstname:    String,
     lastname:     String,
     businessName: String,
     email:        { type: String, required: true, validate: { validator: validateEmail, message: 'Invalid email address.' } },
@@ -18,7 +18,7 @@ var UserSchema = new Schema({
 // All except password hash
 UserSchema.methods.getPublicSchema = function() {
     return {
-        name:         this.name,
+        firstname:    this.firstname,
         lastname:     this.lastname,
         businessName: this.businessName,
         email:        this.email,
@@ -31,7 +31,7 @@ UserSchema.methods.getPublicSchema = function() {
 }
 
 UserSchema.methods.setPublicUser = function(user) {
-    this.name         = user.name || this.name;
+    this.firstname    = user.firstname || this.firstname;
     this.lastname     = user.lastname || this.lastname;
     this.businessName = user.businessName || this.businessName;
     this.type         = user.type || this.type;

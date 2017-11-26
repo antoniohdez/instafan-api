@@ -13,7 +13,7 @@ exports.returnFullSchema = function(res) {
 
 exports.returnError = function(res) {
     return (err) => {
-        res.json(err);
+        res.status(400).json(err);
     }
 }
 
