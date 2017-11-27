@@ -9,11 +9,17 @@ exports.list = function(req, res) {
 }
 
 exports.create = function(req, res) {
-    const user = createUser(req, res);
-
-    user.save()
-        .then(response.returnPublicSchema(res))
-        .catch(response.returnError(res));
+    const user = createUserModel(req, res);
+    user.then((user) => {
+            if (user) {
+                user.save()
+                    .then(response.returnPublicSchema(res))
+                    .catch(response.returnError(res));
+            }
+        })
+        .catch((err) => {
+            response.returnCustomError(res, 400, err);
+        });
 }
 
 exports.show = function(req, res) {
@@ -50,16 +56,22 @@ exports.delete = function(req, res) {
         .catch(response.returnError(res));*/
 };
 
-function createUser(req, res) {
-    let user = new User();
-    user = Object.assign(user, req.body);
-    
-    user.status = 'active';
-    user.createdOn = Date.now();
-    user.updatedOn = Date.now();
-    
-    password.validatePassword(req.body.password, req, res);
-    user.password = password.hashPassword(req.body.password);
-    
-    return user;
+async function createUserModel(req, res) {
+    req.body.email = req.body.email.toLowerCase();
+
+    const user = await User.findOne({ email: req.body.email });
+    if (!user) {
+        let newUser = new User();
+        newUser = Object.assign(newUser, req.body);
+        
+        newUser.status = 'active';
+        newUser.createdOn = Date.now();
+        newUser.updatedOn = Date.now();
+        
+        password.validatePassword(newUser.password, req, res);
+        newUser.password = password.hashPassword(req.body.password);
+        
+        return newUser;    
+    }
+    throw new Error("User already registered.");
 }

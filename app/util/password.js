@@ -1,4 +1,5 @@
 const bcrypt = require('bcrypt');
+const response = require('./response');
 
 exports.hashPassword = function(password) {
     const saltRounds = 10;
@@ -8,7 +9,7 @@ exports.hashPassword = function(password) {
 
 exports.validatePassword = function(password, req, res) {
     if (req.body.password.length < 8) {
-        returnCustomError(res, 401, {key: 'password', name: 'ValidatorError', message: 'Invalid password', value: req.body.password})
+        response.returnCustomError(res, 401, {key: 'password', name: 'ValidatorError', message: 'Invalid password', value: req.body.password})
         throw 'Invalid password';
     }
 

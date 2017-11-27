@@ -23,7 +23,7 @@ exports.returnCustomError = function(res, status, err) {
         	'success': false,
             'errors': {
                 [err.key]: {
-                    'message': err.Errormessage,
+                    'message': err.message,
                     'name': err.name,
                     'value': err.value
                 }
