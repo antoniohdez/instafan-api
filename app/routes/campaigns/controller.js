@@ -55,8 +55,7 @@ exports.create = function(req, res) {
                     }
                 });
             })
-        //.catch(response.returnError(res));
-        .catch(console.log);
+        .catch(response.returnError(res));
 }
 
 exports.show = function(req, res) {
@@ -85,9 +84,17 @@ exports.delete = function(req, res) {
         .then((campaign) => {
             campaign.status = 'deleted';
             campaign.updatedOn = Date.now();
-            campaign.save()
-                .then(response.returnFullSchema(res))
-                .catch(response.returnError(res));
+
+            client.deleteTarget(campaign.targetID, (error, result) => {
+
+                if (error) {
+                    response.returnError(res)(error);
+                } else {
+                    campaign.save()
+                        .then(response.returnFullSchema(res))
+                        .catch(response.returnError(res));
+                }
+            });
         })
         .catch(response.returnError(res));
     /*Campaign.remove({ _id: req.params.campaign_id })

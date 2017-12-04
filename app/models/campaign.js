@@ -8,7 +8,7 @@ var CampaignSchema = new Schema({
     hashtag:     String,
     startDate:   Date,
     endDate:     Date,
-    status:      { type: String, required: true, enum: ['active', 'inactive', 'suspended'] },
+    status:      { type: String, required: true, enum: ['active', 'inactive', 'suspended', 'deleted'] },
     stickers:    { type: [ String ], required: true, validate: { validator: (stickers) => { return stickers.length >= 4 && stickers.length <= 8 }, message: 'Invalid number of stickers' } },
     watermark:   String,
 
