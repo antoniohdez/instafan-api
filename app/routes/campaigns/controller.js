@@ -20,13 +20,19 @@ exports.create = function(req, res) {
     campaign.save()
         .then(
             (campaign) => {
+                // Delete the string: 'data:image/png;base64,' and 'data:image/jpeg;base64,'
+                let target_image = campaign.target.split(',');
+                target_image.shift();
+                target_image = target_image.join('');
+
                 const target = {
                     name: campaign._id,
-                    width: 32.0,
-                    image: campaign.target,
+                    width: 100.0, // Currently used in existing DB in Vuforia. Could change.
+                    image: target_image,
                     active_flag: true,
                     application_metadata: util.encodeBase64(JSON.stringify({ id: campaign._id }))
                 }
+                
                 client.addTarget(target, (error, result) => {
                     if (error) {
                         console.log(error);
@@ -34,22 +40,23 @@ exports.create = function(req, res) {
 
                         exports.delete(req, res);
                     } else {
-                        console.log(result);
-                        campaign.targetID = result.target_id;
-                        campaign.save()
-                            .then(response.returnFullSchema(res))
-                            .catch(response.returnError(res));
                         if (result.result_code === "TargetCreated") {
-                            console.log("Created");
+                            campaign.targetID = result.target_id;
+                            campaign.save()
+                                .then(response.returnFullSchema(res))
+                                .catch(response.returnError(res));
                         } else {
                             // Check missing case here. 
-                            console.log("???");
+                            console.log("=== Missing handler ===");
+                            console.log(error);
+                            console.log(result);
+                            console.log("=== Missing handler ===");
                         }
                     }
                 });
-                response.returnFullSchema(res)
             })
-        .catch(response.returnError(res));
+        //.catch(response.returnError(res));
+        .catch(console.log);
 }
 
 exports.show = function(req, res) {

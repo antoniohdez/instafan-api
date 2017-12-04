@@ -18,7 +18,7 @@ db.on('error', console.error.bind(console, 'MongoDB connection error:'));
 
 app.set('superSecret', config.secret); // secret variable
 app.use(bodyParser.urlencoded({ extended: false }));
-app.use(bodyParser.json());
+app.use(bodyParser.json({ limit: '12mb' }));
 
 // Log requests to the console
 app.use(morgan('dev'));

@@ -15,7 +15,7 @@ exports.login = function(req, res) {
                 if (bcrypt.compareSync(req.body.password, user.password)) {
                     
                     const payload = { email: user.email };
-                    const expirationTime = 60 * 60; // 1 hours
+                    const expirationTime = 60 * 60 * 24; // 24 hours
                     const accessToken = generateWebToken(payload, expirationTime);
 
                     res.json({
