@@ -21,7 +21,8 @@ exports.login = function(req, res) {
                     res.json({
                         success: true,
                         message: 'Authentication successful.',
-                        accessToken: accessToken
+                        accessToken: accessToken,
+                        userID: user._id
                     });
                 } else {
                     res.status(401).json({ success: false, message: 'Authentication failed.' });

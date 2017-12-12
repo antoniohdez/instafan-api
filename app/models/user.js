@@ -30,7 +30,7 @@ UserSchema.methods.getPublicSchema = function() {
     }
 }
 
-UserSchema.methods.setPublicUser = function(user) {
+UserSchema.methods.setPublicSchema = function(user) {
     this.firstname    = user.firstname || this.firstname;
     this.lastname     = user.lastname || this.lastname;
     this.businessName = user.businessName || this.businessName;

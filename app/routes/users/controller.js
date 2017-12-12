@@ -36,7 +36,7 @@ exports.update = function(req, res) {
 
             updatedUser.save()
                 .then(response.returnPublicSchema(res))
-                .catch(response.returnError(res));
+                .catch(response.returnError({test:"test"}));
 
         })
         .catch(response.returnError(res));
