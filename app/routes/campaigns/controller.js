@@ -9,7 +9,7 @@ const client = vuforia.client({
 util = vuforia.util();
 
 exports.list = function(req, res) {
-    Campaign.find()
+    Campaign.find({ userID: req.query.userID })
         .then(response.returnFullSchema(res))
         .catch(response.returnError(res));
 }
@@ -86,7 +86,6 @@ exports.delete = function(req, res) {
             campaign.updatedOn = Date.now();
 
             client.deleteTarget(campaign.targetID, (error, result) => {
-
                 if (error) {
                     response.returnError(res)(error);
                 } else {

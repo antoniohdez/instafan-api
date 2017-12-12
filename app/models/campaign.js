@@ -11,6 +11,7 @@ var CampaignSchema = new Schema({
     status:      { type: String, required: true, enum: ['active', 'inactive', 'suspended', 'deleted'] },
     stickers:    { type: [ String ], required: true, validate: { validator: (stickers) => { return stickers.length >= 4 && stickers.length <= 8 }, message: 'Invalid number of stickers' } },
     watermark:   String,
+    userID:      String,
 
     createdOn:    Date,
     updatedOn:    Date
@@ -27,6 +28,8 @@ CampaignSchema.methods.setPublicSchema = function(campaign) {
     this.status      = campaign.status || this.status
     this.stickers    = campaign.stickers || this.stickers
     this.watermark   = campaign.watermark || this.watermark
+    this.userID   = campaign.userID || this.userID
+
 
     return this;
 }
