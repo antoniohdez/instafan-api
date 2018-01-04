@@ -42,6 +42,7 @@ app.get('/', function(req, res) {
 app.use('/auth', require('./app/routes/auth'));
 app.use('/users', require('./app/routes/users'));
 app.use('/campaigns', require('./app/routes/campaigns'));
+app.use('/analytics', require('./app/routes/analytics'));
 
 // Server Config
 
