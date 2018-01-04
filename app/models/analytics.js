@@ -1,12 +1,12 @@
 const mongoose = require('mongoose');
 const Schema   = mongoose.Schema;
 
-const locationSchema = new Schema({
+const LocationSchema = new Schema({
     latitude: { type: Number, require: true },
     longitude: { type: Number, require: true }
 });
 
-const timeSpanSchema = new Schema({
+const TimeSpanSchema = new Schema({
     start: { type: Date, required: true },
     end: { type: Date, required: true }
 });
@@ -27,7 +27,7 @@ const AnalyticsSchema = new Schema({
                 },
     social:     { 
                     type: String, 
-                    enum: ['facebook', 'twitter'], 
+                    //enum: ['facebook', 'twitter'], 
                     validate: {
                         validator: function(value) { return this.type === 'share'; },
                         message: 'Invalid object: Invalid parameter for request type'
@@ -41,14 +41,14 @@ const AnalyticsSchema = new Schema({
                     }
                 },
     location:   {
-                    type: locationSchema,
+                    type: LocationSchema,
                     validate: {
                         validator: function(value) { return this.type === 'location'; },
                         message: 'Invalid object: Invalid parameter for request type'
                     }
                 },
     timeSpan:   {
-                    type: timeSpanSchema,
+                    type: TimeSpanSchema,
                     validate: {
                         validator: function(value) { return this.type === 'timeSpan'; },
                         message: 'Invalid object: Invalid parameter for request type'

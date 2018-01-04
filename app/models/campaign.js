@@ -1,7 +1,11 @@
-var mongoose = require('mongoose');
-var Schema   = mongoose.Schema;
+const mongoose = require('mongoose');
+const Schema   = mongoose.Schema;
 
-var CampaignSchema = new Schema({
+const StickerSchema = new Schema({
+    sticker: { type: String, require: true }
+});
+
+const CampaignSchema = new Schema({
     name:        { type: String, required: true },
     target:      { type: String, required: true },
     targetID:    String,
@@ -9,7 +13,7 @@ var CampaignSchema = new Schema({
     startDate:   Date,
     endDate:     Date,
     status:      { type: String, required: true, enum: ['active', 'inactive', 'suspended', 'deleted'] },
-    stickers:    { type: [ String ], required: true, validate: { validator: (stickers) => { return stickers.length >= 4 && stickers.length <= 8 }, message: 'Invalid number of stickers' } },
+    stickers:    { type: [ StickerSchema ], required: true, validate: { validator: (stickers) => { return stickers.length >= 4 && stickers.length <= 8 }, message: 'Invalid number of stickers' } },
     watermark:   String,
     userID:      String,
 
@@ -29,7 +33,6 @@ CampaignSchema.methods.setPublicSchema = function(campaign) {
     this.stickers    = campaign.stickers || this.stickers
     this.watermark   = campaign.watermark || this.watermark
     this.userID   = campaign.userID || this.userID
-
 
     return this;
 }
