@@ -12,10 +12,10 @@ const TimeSpanSchema = new Schema({
 });
 
 const AnalyticsSchema = new Schema({
-    targetID:   { // Reference to the collection currently named "campaigns"
-                    type: Schema.Types.ObjectId, 
+    target:     { // Reference to the collection currently named "campaigns"
+                    type: Schema.Types.ObjectId,
                     required: true
-                }, 
+                },
     type:       { 
                     type: String, 
                     required: true, 
@@ -33,8 +33,8 @@ const AnalyticsSchema = new Schema({
                         message: 'Invalid object: Invalid parameter for request type'
                     }
                 },
-    stickerID:  { 
-                    type: Schema.Types.ObjectId, 
+    sticker:    { 
+                    type: Schema.Types.ObjectId,
                     validate: {
                         validator: function(value) { return this.type === 'sticker'; },
                         message: 'Invalid object: Invalid parameter for request type'

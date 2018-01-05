@@ -16,6 +16,7 @@ const CampaignSchema = new Schema({
     stickers:    { type: [ StickerSchema ], required: true, validate: { validator: (stickers) => { return stickers.length >= 4 && stickers.length <= 8 }, message: 'Invalid number of stickers' } },
     watermark:   String,
     userID:      String,
+    analytics:   [{ type: Schema.Types.ObjectId, ref: 'Analytics' }],
 
     createdOn:    Date,
     updatedOn:    Date
