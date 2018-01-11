@@ -6,12 +6,15 @@ const password = require('../../util/password');
 exports.summarize = function(req, res) {
     Campaign
         .find({ userID: req.query.userID })
-        .select('targetID')
+        .select('target')
         .then((campaigns) => {
+            console.log(campaigns);
             campaigns = campaigns.map((campaign) => campaign._id);
 
-            Analytics.find({ 'targetID': { $in: campaigns } })
+
+            Analytics.find({ 'target': { $in: campaigns } })
                 .then((data) => {
+                    console.log(data)
                     const summary = data.reduce((summary, d) => {
                         switch(d.type) {
                             case 'scan':
@@ -44,7 +47,8 @@ exports.log = function(req, res) {
 
 exports.show = function(req, res) {
     // TO DO: Verify query
-    Analytics.findById(req.params.target_id)
+    Analytics
+        .find({ target: req.params.campaign_id })
         .then(response.returnPublicSchema(res))
         .catch(response.returnError(res));
 }
