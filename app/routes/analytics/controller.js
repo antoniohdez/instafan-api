@@ -2,19 +2,17 @@ const Analytics = require('../../models/analytics');
 const Campaign = require('../../models/campaign');
 const response = require('../../util/response');
 const password = require('../../util/password');
+const mongoose = require('mongoose');
 
 exports.summarize = function(req, res) {
     Campaign
         .find({ userID: req.query.userID })
         .select('target')
         .then((campaigns) => {
-            console.log(campaigns);
             campaigns = campaigns.map((campaign) => campaign._id);
-
 
             Analytics.find({ 'target': { $in: campaigns } })
                 .then((data) => {
-                    console.log(data)
                     const summary = data.reduce((summary, d) => {
                         switch(d.type) {
                             case 'scan':
@@ -46,9 +44,65 @@ exports.log = function(req, res) {
 }
 
 exports.show = function(req, res) {
-    // TO DO: Verify query
+    Campaign
+        .find({ _id: req.params.target_id }, "createdOn")
+        .then((data) => {
+            //response.returnFullSchema(res)(data);
+        })
+
     Analytics
-        .find({ target: req.params.campaign_id })
-        .then(response.returnPublicSchema(res))
+        .count({ target: req.params.target_id, type: 'scan' })
+        .then((data) => {
+            //response.returnFullSchema(res)(data);
+        })
+
+    Analytics
+        .find({ target: req.params.target_id, type: 'timeSpan' })
+        .then((data) => {
+            //response.returnFullSchema(res)(data);
+        })
         .catch(response.returnError(res));
+
+    Analytics
+        .find({ target: req.params.target_id, type: 'share' })
+        .then((data) => {
+            //response.returnFullSchema(res)(data);
+        })
+        .catch(response.returnError(res));
+
+    Analytics
+        .count({ target: req.params.target_id, type: 'photo' })
+        .then((data) => {
+            //response.returnFullSchema(res)(data);
+        })
+        .catch(response.returnError(res));
+
+    Analytics
+        .aggregate( [
+            {
+                $match: { 
+                    type: "sticker",
+                    target: mongoose.Types.ObjectId(req.params.target_id)
+                }
+            },
+            { 
+                $group: { 
+                    _id: "$sticker",
+                    count: { $sum: 1 }
+                }
+            }
+        ] )
+        .then((data) => {
+            response.returnFullSchema(res)(data);
+        })
+        .catch(response.returnError(res));
+
+    /*Analytics
+        .find({ target: req.params.target_id })
+        .then((data) => {
+
+            response.returnFullSchema(res)({});
+        })
+        .catch(response.returnError(res));
+        */
 }

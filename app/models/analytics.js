@@ -63,7 +63,7 @@ function typeValidator(type) {
         case 'share': 
             return !!this.social;
         case 'sticker':
-            return !!this.stickerID;
+            return !!this.sticker;
         case 'location':
             return !!this.location;
         case 'timeSpan':
