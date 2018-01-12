@@ -44,41 +44,37 @@ exports.log = function(req, res) {
 }
 
 exports.show = function(req, res) {
-    Campaign
-        .find({ _id: req.params.target_id }, "createdOn")
-        .then((data) => {
-            //response.returnFullSchema(res)(data);
-        })
+    const creationDatePromise = Campaign
+        .findOne({ _id: req.params.target_id }, "createdOn")
+        .then( result => getDaysSinceDate(result.createdOn) );
 
-    Analytics
-        .count({ target: req.params.target_id, type: 'scan' })
-        .then((data) => {
-            //response.returnFullSchema(res)(data);
-        })
+    const scansPromise = Analytics.count({ target: req.params.target_id, type: 'scan' });
 
-    Analytics
-        .find({ target: req.params.target_id, type: 'timeSpan' })
-        .then((data) => {
-            //response.returnFullSchema(res)(data);
-        })
-        .catch(response.returnError(res));
+    const timeSpanPromise = Analytics
+        .find({ target: req.params.target_id, type: 'timeSpan' }, "timeSpan")
+        .then( getTimeSpanAvg );
 
-    Analytics
-        .find({ target: req.params.target_id, type: 'share' })
-        .then((data) => {
-            //response.returnFullSchema(res)(data);
-        })
-        .catch(response.returnError(res));
+    const sharePromise = Analytics
+        .aggregate([
+            {
+                $match: { 
+                    type: "share",
+                    target: mongoose.Types.ObjectId(req.params.target_id)
+                }
+            },
+            { 
+                $group: { 
+                    _id: "$social",
+                    count: { $sum: 1 }
+                }
+            }
+        ]);
 
-    Analytics
-        .count({ target: req.params.target_id, type: 'photo' })
-        .then((data) => {
-            //response.returnFullSchema(res)(data);
-        })
-        .catch(response.returnError(res));
+    const photoPromise = Analytics
+        .count({ target: req.params.target_id, type: 'photo' });
 
-    Analytics
-        .aggregate( [
+    const stickersPromise = Analytics
+        .aggregate([
             {
                 $match: { 
                     type: "sticker",
@@ -91,18 +87,38 @@ exports.show = function(req, res) {
                     count: { $sum: 1 }
                 }
             }
-        ] )
+        ]);
+
+    Promise.all([ creationDatePromise, scansPromise, timeSpanPromise, sharePromise, photoPromise, stickersPromise ])
         .then((data) => {
-            response.returnFullSchema(res)(data);
+            response.returnFullSchema(res)({
+                activeDays: data[0],
+                scans: data[1],
+                timeSpan: data[2],
+                shares: {
+                    facebook: data[3].filter( obj => obj._id === 'facebook' )[0].count,
+                    twitter: data[3].filter( obj => obj._id === 'twitter' )[0].count
+                },
+                photos: data[4],
+                stickers: data[5]
+            });
         })
         .catch(response.returnError(res));
+}
 
-    /*Analytics
-        .find({ target: req.params.target_id })
-        .then((data) => {
+function getDaysSinceDate(date) {
+    const difference = Date.now() - date;
+    return Math.round( difference /  (1000 * 3600 * 24) ); // In days
+}
 
-            response.returnFullSchema(res)({});
-        })
-        .catch(response.returnError(res));
-        */
+function getTimeSpanAvg(data) {
+    const timeSpanArray = data.map((statObj) => statObj.timeSpan.end - statObj.timeSpan.start);
+    const timeSpanSum = timeSpanArray.reduce((last, current) => last + current);
+    const timeSpanAvg = timeSpanSum / timeSpanArray.length;
+    let min = Math.round(timeSpanAvg / (1000 * 60) );
+    let sec = Math.round( (timeSpanAvg / 1000) % 60);
+    min = ( min < 10 ) ? "0" + `${min}` : min;
+    sec = ( sec < 10 ) ? "0" + `${sec}` : sec;
+
+    return `${min}:${sec}`;
 }
