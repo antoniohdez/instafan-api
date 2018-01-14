@@ -9,9 +9,16 @@ const client = vuforia.client({
 util = vuforia.util();
 
 exports.list = function(req, res) {
-    Campaign.find({ userID: req.query.userID })
-        .then(response.returnFullSchema(res))
-        .catch(response.returnError(res));
+    if (req.query.target === 'false') {
+        Campaign.find({ userID: req.query.userID }, 'name status stickers')
+            .then(response.returnFullSchema(res))
+            .catch(response.returnError(res));
+    } else {
+        Campaign.find({ userID: req.query.userID })
+            .then(response.returnFullSchema(res))
+            .catch(response.returnError(res));
+    }
+    
 }
 
 exports.create = function(req, res) {
