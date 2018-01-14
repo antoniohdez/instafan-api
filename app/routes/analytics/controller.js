@@ -19,10 +19,10 @@ exports.summarize = function(req, res) {
                             case 'share':
                             case 'sticker':
                             case 'photo':
-                                summary[ d.type ]++;
+                                summary[ `${d.type}s` ]++;
                         }
                         return summary;
-                    }, { scan: 0, share: 0, sticker: 0, photo: 0 });
+                    }, { scans: 0, shares: 0, stickers: 0, photos: 0 });
                     
                     response.returnFullSchema(res)(summary);
                 })
