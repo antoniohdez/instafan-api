@@ -91,13 +91,19 @@ exports.show = function(req, res) {
 
     Promise.all([ creationDatePromise, scansPromise, timeSpanPromise, sharePromise, photoPromise, stickersPromise ])
         .then((data) => {
+            const facebook = data[3].filter( obj => obj._id === 'facebook' );
+            const facebookCount = ( facebook.length > 0 ) ? facebook[0].count : 0;
+
+            const twitter = data[3].filter( obj => obj._id === 'twitter' );
+            const twitterCount = ( twitter.length > 0 ) ? twitter[0].count : 0;
+
             response.returnFullSchema(res)({
                 activeDays: data[0],
                 scans: data[1],
                 timeSpan: data[2],
                 shares: {
-                    facebook: data[3].filter( obj => obj._id === 'facebook' )[0].count,
-                    twitter: data[3].filter( obj => obj._id === 'twitter' )[0].count
+                    facebook: facebookCount,
+                    twitter: twitterCount
                 },
                 photos: data[4],
                 stickers: data[5]
@@ -112,6 +118,9 @@ function getDaysSinceDate(date) {
 }
 
 function getTimeSpanAvg(data) {
+    if (data.length === 0) {
+        return '00:00';
+    }
     const timeSpanArray = data.map((statObj) => statObj.timeSpan.end - statObj.timeSpan.start);
     const timeSpanSum = timeSpanArray.reduce((last, current) => last + current);
     const timeSpanAvg = timeSpanSum / timeSpanArray.length;
