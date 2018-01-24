@@ -3,7 +3,8 @@ const Schema   = mongoose.Schema;
 
 const LocationSchema = new Schema({
     latitude: { type: Number, require: true },
-    longitude: { type: Number, require: true }
+    longitude: { type: Number, require: true },
+    city: { type: String }
 });
 
 const TimeSpanSchema = new Schema({
