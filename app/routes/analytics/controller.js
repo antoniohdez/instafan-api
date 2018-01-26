@@ -93,7 +93,23 @@ exports.show = function(req, res) {
             }
         ]);
 
-    Promise.all([ creationDatePromise, scansPromise, timeSpanPromise, sharePromise, photoPromise, stickersPromise ])
+    const locationsPromise = Analytics
+        .aggregate([
+            {
+                $match: { 
+                    type: "location",
+                    target: mongoose.Types.ObjectId(req.params.target_id)
+                }
+            },
+            { 
+                $group: { 
+                    _id: "$location.city",
+                    count: { $sum: 1 }
+                }
+            }
+        ]);
+
+    Promise.all([ creationDatePromise, scansPromise, timeSpanPromise, sharePromise, photoPromise, stickersPromise, locationsPromise ])
         .then((data) => {
             const facebook = data[3].filter( obj => obj._id === 'facebook' );
             const facebookCount = ( facebook.length > 0 ) ? facebook[0].count : 0;
@@ -110,7 +126,8 @@ exports.show = function(req, res) {
                     twitter: twitterCount
                 },
                 photos: data[4],
-                stickers: data[5]
+                stickers: data[5].sort( (a, b) => (a.count > b.count) ? -1 : 1 ), // Desc order
+                locations: data[6].sort( (a, b) => (a.count > b.count) ? -1 : 1 ) // Desc order
             });
         })
         .catch(response.returnError(res));
