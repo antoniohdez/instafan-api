@@ -39,35 +39,12 @@ exports.log = function(req, res) {
     analytics.updatedOn = Date.now();
 
     if (analytics.type === 'location') {
-        const googleMapsClient = require('@google/maps').createClient({
-            key: 'AIzaSyDbeL1GJc_VzOD8fMKNOgf5mpG8UxCKL58'
-        });
-
-        googleMapsClient.reverseGeocode({
-            latlng: { lat: analytics.location.latitude , lng: analytics.location.longitude }
-        }, function(err, response) {
-            if (err) {
-                response.returnFullSchema(res)(err);  
-            }
-            if (response.status === 200) {
-                let city = false, state = false;
-                for (let i = 0; i < response.json.results.length; i++) {
-                    if ((!city || !state) && response.json.results[i].types[0] === "locality") {
-                        city = response.json.results[i].address_components[0].short_name,
-                        //state = response.json.results[i].address_components[2].short_name;
-                        //res = city + ", " + state;
-                        console.log("=====");
-                        console.log(city);
-                    }
-                }
-            }
-
-        });
+        logLocationStat(analytics, res);
+    } else {
+        analytics.save()
+            .then(response.returnFullSchema(res))
+            .catch(response.returnError(res));
     }
-
-    analytics.save()
-        .then(response.returnFullSchema(res))
-        .catch(response.returnError(res));
 }
 
 exports.show = function(req, res) {
@@ -137,6 +114,40 @@ exports.show = function(req, res) {
             });
         })
         .catch(response.returnError(res));
+}
+
+function logLocationStat(analytics, res) {
+    const googleMapsClient = require('@google/maps').createClient({
+        key: 'AIzaSyDbeL1GJc_VzOD8fMKNOgf5mpG8UxCKL58'
+    });
+
+    googleMapsClient.reverseGeocode({
+        latlng: { lat: analytics.location.latitude , lng: analytics.location.longitude }
+    }, function(err, mapsResponse) {
+        if (err) {
+            response.returnError(res)(err);  
+        }
+        if (mapsResponse.status === 200) {
+            const city = getCity(mapsResponse);
+            analytics.location.city = city;
+                analytics.save()
+                    .then(response.returnFullSchema(res))
+                    .catch(response.returnError(res));
+        }
+
+    });
+}
+
+function getCity(mapsResponse) {
+    let city;
+    let state;
+    for (let i = 0; i < mapsResponse.json.results.length; i++) {
+        if ((!city || !state) && mapsResponse.json.results[i].types[0] === "locality") {
+            city = mapsResponse.json.results[i].address_components[0].short_name;
+            //state = mapsResponse.json.results[i].address_components[2].short_name;
+            return city
+        }
+    }
 }
 
 function getDaysSinceDate(date) {
